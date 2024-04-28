@@ -43,7 +43,7 @@ export async function run(): Promise<void> {
  * LastWillのConditionが反応するかどうかチェックする
  *
  * @param condition
- * @param teamAccessLogsResponse
+ * @param lastLogin
  */
 const shouldExecute = (condition: Condition, lastLogin: LastLogin): boolean => {
   let silentDays: number
