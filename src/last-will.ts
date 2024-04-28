@@ -25,7 +25,7 @@ export type ConditionDate = {
 export type ConditionAccount = {
   type: 'account'
   account: {
-    days: number
+    silentDays: number
     userName: string
   }
 }
@@ -34,7 +34,7 @@ export type ConditionDateAndAccount = {
   type: 'dateAndAccount'
   date: string
   account: {
-    days: number
+    minSilentDays: number
     userName: string
   }
 }

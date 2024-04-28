@@ -1,9 +1,9 @@
 import * as core from '@actions/core'
-import { TeamAccessLogsResponse, WebClient } from '@slack/web-api'
+import { WebClient } from '@slack/web-api'
 
 import { getConfig } from './config'
+import { getAndUpdateLastLogin, LastLogin } from './last-login'
 import { Condition, getLastWill } from './last-will'
-import { teamAccessLogs } from './slack'
 
 /**
  * last-will.json.encを復号し、teamAccessLogsと突合の上、必要に応じてメッセージを送信する
@@ -14,11 +14,12 @@ export async function run(): Promise<void> {
     const lastWill = getLastWill()
     console.log(`${lastWill.messages.length} messages found.`)
 
-    const teamAccessLogsResponse = await teamAccessLogs(config.slackUserToken)
+    const lastLogin = await getAndUpdateLastLogin(config.slackUserToken)
+    console.log(lastLogin)
 
     const client = new WebClient(config.slackBotToken)
     for (const lastWillMessage of lastWill.messages) {
-      if (!shouldExecute(lastWillMessage.condition, teamAccessLogsResponse)) {
+      if (!shouldExecute(lastWillMessage.condition, lastLogin)) {
         continue
       }
 
@@ -42,69 +43,44 @@ export async function run(): Promise<void> {
  * LastWillのConditionが反応するかどうかチェックする
  *
  * @param condition
- * @param teamAccessLogsResponse
+ * @param lastLogin
  */
-const shouldExecute = (
-  condition: Condition,
-  teamAccessLogsResponse: TeamAccessLogsResponse
-): boolean => {
+const shouldExecute = (condition: Condition, lastLogin: LastLogin): boolean => {
   let silentDays: number
   switch (condition.type) {
     case 'date':
       return dateFormat(new Date()) === condition.date
 
     case 'account':
-      if (!teamAccessLogsResponse.ok) {
-        console.error(
-          `teamAccessLogs has error. ${teamAccessLogsResponse.error}`
-        )
-      }
-      silentDays = getSilentDaysByUserName(
-        teamAccessLogsResponse,
-        condition.account.userName
+      silentDays = dateDiff(
+        new Date(),
+        new Date(lastLogin[condition.account.userName] * 1000)
       )
-      return condition.account.days === silentDays
+      return condition.account.silentDays === silentDays
 
     case 'dateAndAccount':
       if (dateFormat(new Date()) !== condition.date) {
         return false
       }
-      if (!teamAccessLogsResponse.ok) {
-        console.error(
-          `teamAccessLogs has error. ${teamAccessLogsResponse.error}`
-        )
-      }
-      silentDays = getSilentDaysByUserName(
-        teamAccessLogsResponse,
-        condition.account.userName
+      silentDays = dateDiff(
+        new Date(),
+        new Date(lastLogin[condition.account.userName] * 1000)
       )
-      return condition.account.days <= silentDays
+      return condition.account.minSilentDays <= silentDays
   }
 }
 
 /**
- * 任意のユーザーアカウントの未ログイン日数を取得
+ * 日数の差を計算
  *
- * @param response
- * @param userName
+ * @param date1
+ * @param date2
  */
-const getSilentDaysByUserName = (
-  response: TeamAccessLogsResponse,
-  userName: string
-): number => {
-  let days = Number.MAX_SAFE_INTEGER
-  for (const login of response.logins ?? []) {
-    if (userName === login.username && login.date_last) {
-      days = Math.min(
-        days,
-        Math.floor(
-          (new Date().getTime() - new Date(login.date_last * 1000).getTime()) /
-            86400000
-        )
-      )
-    }
+const dateDiff = (date1: Date, date2: Date): number => {
+  if (date1.getTime() < date2.getTime()) {
+    return Math.floor((date2.getTime() - date1.getTime()) / 86400000)
   }
-  return days
+  return Math.floor((date1.getTime() - date2.getTime()) / 86400000)
 }
 
 /**
