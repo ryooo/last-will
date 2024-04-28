@@ -1,19 +1,11 @@
-name: Continuous Integration
+name: Daily
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: read
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
-  test-typescript:
-    name: TypeScript Tests
+  daily:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,15 +18,8 @@ jobs:
           version: 8
       - name: pnpm
         run: pnpm i --frozen-lockfile
-
-      - name: Check Format
-        run: pnpm format:check
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Test
-        run: pnpm ci-test
+      - name: lint
+        run: pnpm check
         env:
           SLACK_BOT_TOKEN: ${{secrets.SLACK_BOT_TOKEN}}
           SLACK_USER_TOKEN: ${{secrets.SLACK_USER_TOKEN}}
