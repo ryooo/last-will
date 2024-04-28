@@ -1,0 +1,32 @@
+{
+  "messages": [
+    {
+      "condition": {
+        "type": "account",
+        "account": {
+          "userName": "hoge",
+          "silentDays": 2
+        }
+      },
+      "message": "Message sent on the day hoge has not logged in for 2 days."
+    },
+    {
+      "condition": {
+        "type": "date",
+        "date": "2024-04-29"
+      },
+      "message": "Message sent on 2024-04-29."
+    },
+    {
+      "condition": {
+        "type": "dateAndAccount",
+        "date": "2025-12-01",
+        "account": {
+          "userName": "ryo",
+          "minSilentDays": 365
+        }
+      },
+      "message": "Message sent if ryo has not logged in for 365 days or more on 2025-12-01."
+    }
+  ]
+}

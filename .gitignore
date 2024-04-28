@@ -104,3 +104,4 @@ __tests__/runner/*
 
 .env
 last-will.json
+last-login.json

@@ -18,7 +18,12 @@ jobs:
           version: 8
       - name: pnpm
         run: pnpm i --frozen-lockfile
-      - name: lint
+      - uses: actions/download-artifact@v4
+        with:
+          name: last-login
+          path: ./last-login.json
+      - name: check
+        id: check
         run: pnpm check
         env:
           SLACK_BOT_TOKEN: ${{secrets.SLACK_BOT_TOKEN}}
@@ -26,3 +31,10 @@ jobs:
           SLACK_CHANNEL_NAME: ${{secrets.SLACK_CHANNEL_NAME}}
           CRYPT_PASS: ${{secrets.CRYPT_PASS}}
           CRYPT_SALT: ${{secrets.CRYPT_SALT}}
+      - name: Upload Artifact
+        if: steps.check.outputs.result == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: last-login
+          path: last-login.json
+          retention-days: 90
