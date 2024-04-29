@@ -26,12 +26,12 @@ jobs:
           url="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/daily.yml/runs?per_page=1"
           echo "::set-output name=run-id::$(curl -fsSL "$url" | jq -r '.workflow_runs[0].id')"
       - run: echo ${{ steps.last-execution.outputs.run-id }}
-      - uses: actions/download-artifact@v4
-        if: always()
-        with:
-          name: last-login
-          path: ./last-login.json
-          run-id: ${{ steps.last-execution.outputs.run-id }}
+#      - uses: actions/download-artifact@v4
+#        if: always()
+#        with:
+#          name: last-login
+#          path: ./last-login.json
+#          run-id: ${{ steps.last-execution.outputs.run-id }}
       - name: check
         if: always()
         id: check
