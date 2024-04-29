@@ -26,6 +26,7 @@ jobs:
         run: pnpm i --frozen-lockfile
       - name: test
         run: |
+          echo repos/$OWNER/$REPO/commits/$COMMIT_SHA/check-runs
           gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA/check-runs
           gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA/check-runs | jq -r '.check_runs[]
           RUN_ID=$(gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA/check-runs | jq -r '.check_runs[] | select(.name == "Daily") | .html_url | capture("/runs/(?<number>[0-9]+)/jobs") | .number' | sed 's/"//g' | head -n 1)
