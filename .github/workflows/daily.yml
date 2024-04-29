@@ -34,7 +34,6 @@ jobs:
           path: ./
           run-id: ${{ steps.last-execution.outputs.run-id }}
       - name: check
-        if: always()
         id: check
         run: pnpm check
         env:
@@ -44,8 +43,7 @@ jobs:
           CRYPT_PASS: ${{secrets.CRYPT_PASS}}
           CRYPT_SALT: ${{secrets.CRYPT_SALT}}
       - name: Upload Artifact
-        if: always()
-#        if: steps.check.outputs.result == 'true'
+        if: steps.check.outputs.result == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: last-login
