@@ -9,6 +9,9 @@ on:
 jobs:
   daily:
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      checks: read
 
     steps:
       - uses: actions/checkout@v4
@@ -25,6 +28,8 @@ jobs:
           gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA/check-runs
           gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA/check-runs | jq -r '.check_runs[]
           RUN_ID=$(gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA/check-runs | jq -r '.check_runs[] | select(.name == "Daily") | .html_url | capture("/runs/(?<number>[0-9]+)/jobs") | .number' | sed 's/"//g' | head -n 1)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/download-artifact@v4
         with:
           name: last-login
@@ -34,6 +39,8 @@ jobs:
             '.check_runs[] | select(.name == "Daily") | .html_url |
             capture("/runs/(?<number>[0-9]+)/jobs") | .number' | sed 's/"//g' |
             head -n 1)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: check
         if: always()
         id: check
