@@ -56,11 +56,11 @@ git push
       "condition": {
         "type": "account",
         "account": {
-          "userName": "hoge",
+          "userId": "U0AAASAAA",
           "silentDays": 2
         }
       },
-      "message": "Message sent on the day hoge has not logged in for 2 days."
+      "message": "Message sent on the day U0AAASAAA has not logged in for 2 days."
     },
     {
       "condition": {
@@ -74,11 +74,11 @@ git push
         "type": "dateAndAccount",
         "date": "2025-12-01",
         "account": {
-          "userName": "ryo",
+          "userId": "U0AAASAAA",
           "minSilentDays": 365
         }
       },
-      "message": "Message sent if ryo has not logged in for 365 days or more on 2025-12-01."
+      "message": "Message sent if U0AAASAAA has not logged in for 365 days or more on 2025-12-01."
     }
   ]
 }

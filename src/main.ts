@@ -56,7 +56,7 @@ const shouldExecute = (condition: Condition, lastLogin: LastLogin): boolean => {
     case 'account':
       silentDays = dateDiff(
         new Date(),
-        new Date(lastLogin[condition.account.userName] * 1000)
+        new Date(lastLogin[condition.account.userId] * 1000)
       )
       return condition.account.silentDays === silentDays
 
@@ -66,7 +66,7 @@ const shouldExecute = (condition: Condition, lastLogin: LastLogin): boolean => {
       }
       silentDays = dateDiff(
         new Date(),
-        new Date(lastLogin[condition.account.userName] * 1000)
+        new Date(lastLogin[condition.account.userId] * 1000)
       )
       return condition.account.minSilentDays <= silentDays
   }

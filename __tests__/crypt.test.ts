@@ -8,7 +8,7 @@ describe('crypt', () => {
       messages: [
         {
           account: {
-            userName: 'ryo',
+            userId: 'ryo',
             days: 0
           },
           message: 'hogehoge'
@@ -19,7 +19,7 @@ describe('crypt', () => {
         },
         {
           account: {
-            userName: 'ryo',
+            userId: 'ryo',
             days: 365
           },
           date: '2025-12-01',

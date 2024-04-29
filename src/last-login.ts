@@ -9,6 +9,7 @@ export type LastLogin = { [key: string]: number }
 
 export const getArtifactLastLogin = (): LastLogin => {
   try {
+    return {}
     return JSON.parse(fs.readFileSync('last-login.json', 'utf-8'))
   } catch (e) {
     console.error(e)
@@ -26,9 +27,9 @@ export const getAndUpdateLastLogin = async (
     console.error(`teamAccessLogs has error. ${teamAccessLogsResponse.error}`)
   } else {
     for (const login of teamAccessLogsResponse.logins ?? []) {
-      if (login.username && login.date_last) {
-        lastLogin[login.username] = Math.max(
-          lastLogin[login.username] ?? 0,
+      if (login.user_id && login.date_last) {
+        lastLogin[login.user_id] = Math.max(
+          lastLogin[login.user_id] ?? 0,
           login.date_last
         )
       }
