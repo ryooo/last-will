@@ -1,6 +1,7 @@
 name: Daily
 
 on:
+  pull_request:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
@@ -19,12 +20,22 @@ jobs:
           version: 8
       - name: pnpm
         run: pnpm i --frozen-lockfile
+      - name: test
+        run: |
+          gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA/check-runs
+          gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA/check-runs | jq -r '.check_runs[]
+          RUN_ID=$(gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA/check-runs | jq -r '.check_runs[] | select(.name == "Daily") | .html_url | capture("/runs/(?<number>[0-9]+)/jobs") | .number' | sed 's/"//g' | head -n 1)
       - uses: actions/download-artifact@v4
         with:
           name: last-login
           path: ./last-login.json
+          run-id:
+            $(gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA/check-runs | jq -r
+            '.check_runs[] | select(.name == "Daily") | .html_url |
+            capture("/runs/(?<number>[0-9]+)/jobs") | .number' | sed 's/"//g' |
+            head -n 1)
       - name: check
-        #        if: always()
+        if: always()
         id: check
         run: pnpm check
         env:
@@ -34,7 +45,7 @@ jobs:
           CRYPT_PASS: ${{secrets.CRYPT_PASS}}
           CRYPT_SALT: ${{secrets.CRYPT_SALT}}
       - name: Upload Artifact
-        if: steps.check.outputs.result == 'true'
+        if: always() # if: steps.check.outputs.result == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: last-login
