@@ -31,7 +31,7 @@ jobs:
         with:
           name: last-login
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path: ./last-login.json
+          path: ./
           run-id: ${{ steps.last-execution.outputs.run-id }}
       - name: check
         if: always()
