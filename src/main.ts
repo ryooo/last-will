@@ -19,6 +19,7 @@ export async function run(): Promise<void> {
 
     const client = new WebClient(config.slackBotToken)
     for (const lastWillMessage of lastWill.messages) {
+      console.log(lastWillMessage.condition)
       if (!shouldExecute(lastWillMessage.condition, lastLogin)) {
         continue
       }
@@ -27,6 +28,7 @@ export async function run(): Promise<void> {
         channel: config.slackChannelName,
         text: lastWillMessage.message
       })
+      console.log(postMessageResponse.ok)
       if (!postMessageResponse.ok) {
         console.error(`postMessage has error. ${postMessageResponse.error}`)
       }
