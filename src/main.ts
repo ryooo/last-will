@@ -15,6 +15,7 @@ export async function run(): Promise<void> {
     console.log(`${lastWill.messages.length} messages found.`)
 
     const lastLogin = await getAndUpdateLastLogin(config.slackUserToken)
+    console.log(`merged last login is below.`)
     console.log(lastLogin)
 
     const client = new WebClient(config.slackBotToken)

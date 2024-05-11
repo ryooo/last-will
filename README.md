@@ -27,6 +27,9 @@ pnpm i
 cp last-will.json.template last-will.json
 vi last-will.json
 
+cp .env.sample .env
+vi .env
+
 pnpm encode
 
 git add last-will.json.enc

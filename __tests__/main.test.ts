@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as main from '../src/main'
+import * as fs from 'fs'
 
 const runMock = jest.spyOn(main, 'run')
 
@@ -20,6 +21,7 @@ describe('action', () => {
   })
 
   it('success', async () => {
+    fs.writeFileSync('last-login.json', JSON.stringify({}))
     await main.run()
     expect(runMock).toHaveReturned()
 

@@ -8,19 +8,15 @@ import { teamAccessLogs } from './slack'
 export type LastLogin = { [key: string]: number }
 
 export const getArtifactLastLogin = (): LastLogin => {
-  try {
-    return {}
-    return JSON.parse(fs.readFileSync('last-login.json', 'utf-8'))
-  } catch (e) {
-    console.error(e)
-  }
-  return {}
+  return JSON.parse(fs.readFileSync('last-login.json', 'utf-8'))
 }
 
 export const getAndUpdateLastLogin = async (
   slackUserToken: string
 ): Promise<LastLogin> => {
   const lastLogin = getArtifactLastLogin()
+  console.log(`artifact last login is below.`)
+  console.log(lastLogin)
 
   const teamAccessLogsResponse = await teamAccessLogs(slackUserToken)
   if (!teamAccessLogsResponse.ok) {

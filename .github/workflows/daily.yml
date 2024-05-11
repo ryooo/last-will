@@ -25,10 +25,18 @@ jobs:
         name: Get the last run id
         run: |
           url="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/daily.yml/runs?status=success&per_page=1"
-          echo "::set-output name=run-id::$(curl -fsSL "$url" | jq -r '.workflow_runs[0].id')"
+          echo "run-id=$(curl -fsSL "$url" | jq -r '.workflow_runs[0].id')" >> $GITHUB_OUTPUT
+      - id: check-artifact-exist
+        name: Check the last artifact
+        run: |
+          url="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${{ steps.last-execution.outputs.run-id }}/artifacts"
+          echo "artifact-name=$(curl -fsSL "$url" | jq -r '.artifacts[0].name')" >> $GITHUB_OUTPUT
       - uses: actions/download-artifact@v4
+        if:
+          ${{ steps.check-artifact-exist.outputs.artifact-name ==
+          'last-login-result' }}
         with:
-          name: last-login
+          name: last-login-result
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: ./
           run-id: ${{ steps.last-execution.outputs.run-id }}
@@ -42,9 +50,9 @@ jobs:
           CRYPT_PASS: ${{secrets.CRYPT_PASS}}
           CRYPT_SALT: ${{secrets.CRYPT_SALT}}
       - name: Upload Artifact
-        if: steps.check.outputs.result == 'true'
+        if: ${{ steps.check.outputs.result == 'true' }}
         uses: actions/upload-artifact@v4
         with:
-          name: last-login
+          name: last-login-result
           path: last-login.json
           retention-days: 90
